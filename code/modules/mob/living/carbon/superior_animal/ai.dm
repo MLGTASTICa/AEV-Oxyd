@@ -9,6 +9,17 @@
 	var/turf/T = get_turf(src)
 	if(!T)
 		return //We're contained inside something, a locker perhaps.
+	var/list/hearers = hearers(src,viewRange)
+	var/list/chunkers = getMobsInRangeChunked(src, viewRange, FALSE, TRUE)
+	var/list/common = hearers & chunkers
+	if(length(common) != length(chunkers) != length(hearers))
+		message_admins("Anomaly within hearers mob and chunked mobs")
+		for(var/mob/thing in hearers)
+			if(ishuman(thing))
+				message_admins("Human found in hearers")
+		for(var/mob/thing in chunkers)
+			if(ishuman(thing))
+				message_admins("Human found in chunkers")
 	return getMobsInRangeChunked(src, viewRange, FALSE, TRUE)
 	//return hearers(src, viewRange)
 

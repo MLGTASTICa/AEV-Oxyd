@@ -135,6 +135,8 @@
 			oldContainer = origin.getContainingAtom()
 
 		if(newContainer != oldContainer)
+			if(ishuman(src))
+				message_admins("[src] has switched container from [oldContainer] to [newContainer]")
 			SEND_SIGNAL(src, COMSIG_ATOM_CONTAINERED, newContainer , oldContainer)
 	/*
 	// Only update plane if we're located on map

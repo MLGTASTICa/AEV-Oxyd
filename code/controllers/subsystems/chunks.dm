@@ -47,25 +47,23 @@ SUBSYSTEM_DEF(chunks)
 
 // Get mobs in range using chunks
 /proc/getMobsInRangeChunked(atom/source, range, aliveonly = FALSE, canseeonly = FALSE)
-	if(!source || !range)
+	if(!source || range < 0)
 		return
 	var/atom/container = source.getContainingAtom()
+	var/turf/containerTurf = get_turf(container)
 	var/list/returnValue = list()
-	if(container.z == 0)
+	if(container.z == 0 || containerTurf == null)
 		return returnValue
 	var/coordinates = list(container.x - range - CHUNK_SIZE, container.y - range - CHUNK_SIZE, container.x + range + CHUNK_SIZE,  container.y + range + CHUNK_SIZE)
-	if(coordinates[1] == 0)
+	if(coordinates[1] <= 0)
 		coordinates[1] = 1
-	if(coordinates[2] == 0)
+	if(coordinates[2] <= 0)
 		coordinates[2] = 1
 	if(coordinates[3] > world.maxx)
 		coordinates[3] = world.maxx
 	if(coordinates[4] > world.maxy)
 		coordinates[4] = world.maxy
 	var/datum/chunk/chunkReference
-	var/turf/containerTurf = get_turf(container)
-	if(containerTurf == null)
-		return returnValue
 	for(var/chunkX = coordinates[1], chunkX <= coordinates[3], chunkX += CHUNK_SIZE)
 		for(var/chunkY = coordinates[2], chunkY <= coordinates[4], chunkY += CHUNK_SIZE)
 			chunkReference = SSchunks.chunk_list_by_zlevel[container.z][CHUNKID(chunkX, chunkY)]
