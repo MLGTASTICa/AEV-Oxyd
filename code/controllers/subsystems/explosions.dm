@@ -100,6 +100,7 @@ SUBSYSTEM_DEF(explosions)
 		while(times_ticked < 2)
 			times_ticked++
 			// Explosion processing itself.
+			var/list/delets = list()
 			while(length(explodey.current_turf_queue))
 				var/turf/target = explodey.current_turf_queue[length(explodey.current_turf_queue)]
 				// Invalid turf??
@@ -113,7 +114,7 @@ SUBSYSTEM_DEF(explosions)
 				target_power -= target.explosion_act(target_power, explodey) + explodey.falloff
 				if(explodey.flags & EFLAG_HALVEFALLOFF)
 					target_power /= 2
-				new /obj/effect/explosion_fire(target)
+				delets.Add(new /obj/effect/explosion_fire(target))
 				if(target_power < EXPLOSION_MINIMUM_THRESHOLD)
 					continue
 				// Run these first so the ones coming from below/above don't get calculated first.
@@ -165,6 +166,8 @@ SUBSYSTEM_DEF(explosions)
 			if(explodey.flags & EFLAG_ADDITIVEFALLOFF)
 				explodey.falloff += explodey.initial_falloff
 
+			QDEL_LIST_IN(delets, 1 SECOND)
+
 			// Explosion is done , nothing else left to iterate , cleanup and etc.
 			if(!length(explodey.turf_queue))
 
@@ -182,6 +185,8 @@ SUBSYSTEM_DEF(explosions)
 			explodey.current_turf_queue = explodey.turf_queue.Copy()
 			explodey.turf_queue = list()
 			current_run -= explodey
+		if(MC_TICK_CHECK)
+			return
 	current_run = explode_queue.Copy()
 
 

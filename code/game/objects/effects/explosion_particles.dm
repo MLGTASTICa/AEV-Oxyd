@@ -74,7 +74,7 @@
 
 /obj/effect/explosion_fire/New()
 	..()
-	addtimer(CALLBACK(GLOBAL_PROC, /proc/qdel, src), 0.5 SECOND)
+	//addtimer(CALLBACK(GLOBAL_PROC, /proc/qdel, src), 0.5 SECOND)
 
 
 
