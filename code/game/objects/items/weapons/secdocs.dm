@@ -15,7 +15,7 @@
 
 /obj/item/oddity/secdocs/Initialize()
 	icon_state = "folder-[pick("omega","psi","theta")]"
-	name = pick("Attractor field theory",
+	name = pick(list("Attractor field theory",
 				"World lines theory",
 				"Evidence of an outside-context problem",
 				"On the use of self-learning AI for public administration",
@@ -48,10 +48,10 @@
 				"Psionics, found to be a common trait amongst one-star citizens",
 				"Freezing light using bluespace lasers. Applications for increased-capacity battery cells.",
 				"Interspecies wars, study into why they started.",
-				"Aster's guild and the link between the new bluespace combat operatives."
+				"Aster's guild and the link between the new bluespace combat operatives.",
 				"Increase of brain-size correlates with insanity. Empirical study into the link between insanity and high intelligence",
-				"Mental instability and brain-modifying drugs found to play a crucial part in the acquisition of psionic powers",
-	)
+				"Mental instability and brain-modifying drugs found to play a crucial part in the acquisition of psionic powers"
+				))
 
 
 	. = ..()
