@@ -81,6 +81,33 @@
 
 	return 0
 
+/obj/item/projectile/bullet/shotgunBuckshot
+	name = "12 Gauge buck pellet"
+	damage_types = list(
+		ARMOR_BULLET = list(
+			DELEM(BRUTE, 12)
+		)
+	)
+	/// Wheter we are the initla buckshot pellet that should create the rest or not
+	var/isInitial = TRUE
+	/// Amount of pellets to create / replicate
+	var/pelletCount = 15
+	/// Angle offset. This is forced by the shotgun if fired from one. If not, then the default is used
+	var/angleOffset = 24
+
+/obj/item/projectile/bullet/shotgunBuckshot/launch(atom/target, target_zone, x_offset, y_offset, angle_offset, proj_sound, user_recoil)
+	if(!isInitial)
+		return ..()
+	else while(pelletCount)
+		pelletCount--
+		var/obj/item/projectile/bullet/shotgunBuckshot/fellowPellet = new(get_turf(src))
+		fellowPellet.isInitial = FALSE
+		fellowPellet.firer = src.firer
+		fellowPellet.PrepareForLaunch()
+		var/angleBruh = rand(-angleOffset/2,angleOffset/2)
+		fellowPellet.launch(target, target_zone, x_offset , y_offset, angleBruh, null, null)
+	..()
+
 //For projectiles that actually represent clouds of projectiles
 /obj/item/projectile/bullet/pellet
 	name = "shrapnel" //'shrapnel' sounds more dangerous (i.e. cooler) than 'pellet'
