@@ -10,3 +10,6 @@ Made to run on AlmaLinux 9 for hosting, includes 3.0 TG rust-g utils. <br>
 ## CONTRIBUTING
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## DEBUGGING
+Define LOWMEMORYMODE , this will force the game to load up the testing map and save a lot of your time on map setup.
