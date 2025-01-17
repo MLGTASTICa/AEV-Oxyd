@@ -22,6 +22,8 @@ GLOBAL_LIST(projectileDamageConstants)
 	spawn_blacklisted = TRUE
 	spawn_frequency = 0
 	spawn_tags = null
+	animate_movement = NO_STEPS
+	glide_size = 8
 	/// Ammo is heavy
 	weight = 10
 	var/bumped = FALSE		//Prevents it from hitting more than one guy at once
@@ -100,6 +102,8 @@ GLOBAL_LIST(projectileDamageConstants)
 	var/datum/vector_loc/location		// current location of the projectile in pixel space
 	var/matrix/effect_transform			// matrix to rotate and scale projectile effects - putting it here so it doesn't
 										//  have to be recreated multiple times
+
+	var/datum/bullet_data/dataRef = null
 
 /// This is done to save a lot of memory from duplicated damage lists.
 /// The list is also copied whenever PrepareForLaunch is called and modified as needs to be
@@ -212,8 +216,8 @@ GLOBAL_LIST(projectileDamageConstants)
 		return
 
 /obj/item/projectile/proc/on_hit(atom/target, def_zone = null)
-	if(!isliving(target))	return 0
-	if(isanimal(target))	return 0
+	if(!isliving(target))	return FALSE
+	if(isanimal(target))	return FALSE
 	var/mob/living/L = target
 	L.apply_effects(stun, weaken, paralyze, irradiate, stutter, eyeblur, drowsy)
 	return TRUE
@@ -247,7 +251,7 @@ GLOBAL_LIST(projectileDamageConstants)
 	return TRUE
 
 /obj/item/projectile/proc/check_fire(atom/target as mob, mob/living/user as mob)  //Checks if you can hit them or not.
-	check_trajectory(target, user, pass_flags, flags)
+	check_trajectory(list(user.x,user.y,user.z), list(target.x, target.y, target.z),null,null, target)
 
 //sets the click point of the projectile using mouse input params
 /obj/item/projectile/proc/set_clickpoint(params)
@@ -279,9 +283,9 @@ GLOBAL_LIST(projectileDamageConstants)
 	var/distance = get_dist(curloc, original)
 	check_hit_zone(distance, user_recoil)
 
-	setup_trajectory(curloc, targloc, x_offset, y_offset, angle_offset) //plot the initial trajectory
-	Process()
-	START_PROCESSING(SSprojectiles, src)
+	muzzle_effect(effect_transform)
+	new /datum/bullet_data(src, target_zone, usr, target, list(x_offset, y_offset, target.z), 48, angle_offset, 50)
+	//Process()
 
 	return FALSE
 
@@ -291,7 +295,6 @@ GLOBAL_LIST(projectileDamageConstants)
 		user.bullet_act(src, target_zone)
 		qdel(src)
 		return FALSE
-
 	forceMove(get_turf(user))
 
 	var/recoil = 0
@@ -320,18 +323,7 @@ GLOBAL_LIST(projectileDamageConstants)
 		firer = user
 	shot_from = launcher.name
 	silenced = launcher.item_flags & SILENT
-
 	return launch(target, target_zone, x_offset, y_offset, angle_offset, user_recoil = recoil)
-
-//Used to change the direction of the projectile in flight.
-/obj/item/projectile/proc/redirect(new_x, new_y, atom/starting_loc, mob/new_firer)
-	var/turf/new_target = locate(new_x, new_y, src.z)
-
-	original = new_target
-	if(new_firer)
-		firer = src
-
-	setup_trajectory(starting_loc, new_target)
 
 /obj/item/projectile/proc/istargetloc(mob/living/target_mob)
 	if(target_mob && original)
@@ -556,15 +548,14 @@ GLOBAL_LIST(projectileDamageConstants)
 		return FALSE
 
 	//stop flying
-	on_impact(A)
-
-	density = FALSE
-	invisibility = 101
-
-
-	qdel(src)
+	onBlockingHit(A)
 	return TRUE
 
+/obj/item/projectile/proc/onBlockingHit(atom/A)
+	on_impact(A)
+	density = FALSE
+	invisibility = 101
+	qdel(src)
 
 /obj/item/projectile/explosion_act(target_power, explosion_handler/handler)
 	return 0
@@ -617,24 +608,6 @@ GLOBAL_LIST(projectileDamageConstants)
 
 /obj/item/projectile/proc/before_move()
 	return FALSE
-
-/obj/item/projectile/proc/setup_trajectory(turf/startloc, turf/targloc, x_offset = 0, y_offset = 0, angle_offset)
-	// setup projectile state
-	starting = startloc
-	current = startloc
-	yo = targloc.y - startloc.y + y_offset
-	xo = targloc.x - startloc.x + x_offset
-
-	// plot the initial trajectory
-	trajectory = new()
-	trajectory.setup(starting, original, pixel_x, pixel_y, angle_offset)
-
-	// generate this now since all visual effects the projectile makes can use it
-	effect_transform = new()
-	effect_transform.Scale(trajectory.return_hypotenuse(), 1)
-	effect_transform.Turn(-trajectory.return_angle())		//no idea why this has to be inverted, but it works
-
-	transform = turn(transform, -(trajectory.return_angle() + 90)) //no idea why 90 needs to be added, but it works
 
 /obj/item/projectile/proc/muzzle_effect(var/matrix/T)
 	//This can happen when firing inside a wall, safety check
@@ -731,75 +704,62 @@ GLOBAL_LIST(projectileDamageConstants)
 
 	return damageTotal > 0 ? (damageLeft / damageTotal) :0
 
-//"Tracing" projectile
-/obj/item/projectile/test //Used to see if you can hit them.
-	invisibility = 101 //Nope!  Can't see me!
-	yo = null
-	xo = null
-	var/result = 0 //To pass the message back to the gun.
-
-/obj/item/projectile/test/Bump(atom/A as mob|obj|turf|area, forced)
-	if(A == firer)
-		forceMove(A.loc)
-		return //cannot shoot yourself
-	if(istype(A, /obj/item/projectile))
-		return
-	if(isliving(A) || istype(A, /mob/living/exosuit))
-		result = 2 //We hit someone, return 1!
-		return
-	result = 1
-	return
-
-/obj/item/projectile/test/launch(atom/target, target_zone, x_offset, y_offset, angle_offset, proj_sound, user_recoil)
-	var/turf/curloc = get_turf(src)
-	var/turf/targloc = get_turf(target)
-	if(!curloc || !targloc)
-		return 0
-
-	original = target
-
-	//plot the initial trajectory
-	setup_trajectory(curloc, targloc)
-	return Process(targloc)
-
-/obj/item/projectile/test/Process(turf/targloc)
-	while(src) //Loop on through!
-		if(result)
-			return (result - 1)
-		if((!( targloc ) || loc == targloc))
-			targloc = locate(min(max(x + xo, 1), world.maxx), min(max(y + yo, 1), world.maxy), z) //Finding the target turf at map edge
-
-		trajectory.increment()	// increment the current location
-		location = trajectory.return_location(location)		// update the locally stored location data
-
-		Move(location.return_turf())
-
-		var/mob/living/M = locate() in get_turf(src)
-		if(istype(M)) //If there is someting living...
-			return 1 //Return 1
-		else
-			M = locate() in get_step(src,targloc)
-			if(istype(M))
-				return 1
-
-//Helper proc to check if you can hit them or not.
-/proc/check_trajectory(atom/target as mob|obj, atom/firer as mob|obj, var/pass_flags=PASSTABLE|PASSGLASS|PASSGRILLE, flags=null)
-	if(!istype(target) || !istype(firer))
-		return 0
-
-	var/obj/item/projectile/test/trace = new /obj/item/projectile/test(get_turf(firer)) //Making the test....
-
-	//Set the flags and pass flags to that of the real projectile...
-	if(!isnull(flags))
-		trace.flags = flags
-	trace.pass_flags = pass_flags
-
-	var/output = trace.launch(target) //Test it!
-	qdel(trace) //No need for it anymore
-	return output //Send it back to the gun!
-
 /proc/get_proj_icon_by_color(var/obj/item/projectile/P, var/color)
 	var/icon/I = new(P.icon, P.icon_state)
 	I.Blend(color)
 	return I
+
+/proc/check_trajectory(list/startingCoordinates, list/targetCoordinates, pass_flags=PASSTABLE|PASSGLASS|PASSGRILLE, flags=null, mob/targetMob)
+	var/angle = ATAN2(targetCoordinates[2] - startingCoordinates[2], targetCoordinates[1] - startingCoordinates[1])
+	message_admins("CT angle : [angle]")
+	var/xRatio = sin(angle)
+	var/yRatio = cos(angle)
+	var/xChange = 0
+	var/yChange = 0
+	var/tX = 0
+	var/tY = 0
+	var/turf/check = locate(round(startingCoordinates[1]/32), round(startingCoordinates[2]/32), round(startingCoordinates[3]))
+	var/turf/targetTurf = locate(round(targetCoordinates[1]/32), round(targetCoordinates[2]/32), round(targetCoordinates[3]))
+	var/simCoords = list(0,0,0)
+	while(check != targetTurf)
+		simCoords[1] += xRatio * 32
+		simCoords[2] += yRatio * 32
+		xChange = round(abs(simCoords[1])/16) * sign(simCoords[1])
+		yChange = round(abs(simCoords[2])/16) * sign(simCoords[2])
+		while((xChange || yChange) && (check != targetTurf))
+			if(xChange)
+				tX = abs(xChange)/xChange
+			if(yChange)
+				tY = abs(yChange)/yChange
+			check = locate(check.x + tX, check.y + tY, check.z)
+			// collision checks
+			if(!check)
+				return FALSE
+			if(check.density)
+				return FALSE
+			for(var/atom/movable/object in check.contents)
+				if(object == targetMob)
+					return TRUE
+				if(object.density)
+					if(istype(object, /obj/structure/window))
+						if(!(pass_flags & PASSGLASS))
+							return FALSE
+					else if(istype(object, /obj/structure/table))
+						if(!(pass_flags & PASSTABLE))
+							return FALSE
+					else if(istype(object, /obj/structure/grille))
+						if(!(pass_flags & PASSGRILLE))
+							return FALSE
+					else if(!istype(object, /obj/structure/railing))
+						return FALSE
+			xChange -= tX
+			yChange -= tY
+			simCoords[1] -= 32 * tX
+			simCoords[2] -= 32 * tY
+			tX = 0
+			tY = 0
+	return TRUE
+
+
+
 
