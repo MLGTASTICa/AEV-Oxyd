@@ -25,7 +25,7 @@ SUBSYSTEM_DEF(bullets)
 	var/pixelsThisStep
 	var/x_change
 	var/y_change
-	var/z_change
+	var/z_change = 0
 	var/tx_change
 	var/ty_change
 	var/tz_change
