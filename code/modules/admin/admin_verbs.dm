@@ -24,7 +24,8 @@ GLOBAL_LIST_INIT(admin_verbs_fun, list(
 	/datum/admins/proc/call_drop_pod,
 	/datum/admins/proc/call_supply_drop,
 	/client/proc/cmd_admin_add_random_ai_law,
-	/client/proc/cmd_admin_add_freeform_ai_law))
+	/client/proc/cmd_admin_add_freeform_ai_law,
+	/client/proc/exporrtclothingicons))
 
 GLOBAL_LIST_INIT(admin_verbs_server, list(
 	/client/proc/cmd_admin_delete,
