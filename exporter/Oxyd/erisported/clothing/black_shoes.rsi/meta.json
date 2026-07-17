@@ -19,24 +19,3 @@
       ]
 }
 
-
-{
-  "version": 1,
-  "license": "",
-  "copyright": "https://github.com/discordia-space/CEV-Eris",
-  "size": {
-    "x": 32,
-    "y": 32
-  },
-  "states":  [
-        {
-            "name": "equipped-FEET",
-            "directions": 4
-        },
-        {
-            "name": "icon"
-        }
-
-      ]
-}
-

@@ -67,6 +67,7 @@
 	var/list/data = typesof(/obj/item/clothing)
 	data.Add(typesof(/obj/item/storage/belt))
 	data.Add(typesof(/obj/item/storage/backpack))
+	var/list/alreadyExported = list()
 	message_admins("found [length(data)] clothings...")
 	for(var/pathed in data)
 		var/list/createdFiles = list()
@@ -85,6 +86,10 @@
 		var/rsirefpath = "Oxyd/erisported/clothing/"
 		var/ymlrefpath = "Oxyd/erisported/prototypes/"
 		var/safename = replacetext(cloth.name, " ", "_")
+		if(safename in alreadyExported)
+			message_admins("skipping [cloth.name] because it has already been exported")
+			continue
+		alreadyExported.Add(safename)
 		var/basepath = rsirefpath + safename +".rsi"
 		var/ymlrsirefpath = basepath
 		basepath = "exporter/"+ basepath + "/"
@@ -279,6 +284,7 @@
 [postcomps]"}
 		var/ymlfile = file("exporter/"+ ymlrefpath + safename + ".yml")
 		ymlfile << protostring
+		custom_icon = new/icon(cloth.icon, cloth.icon_state)
 		fcopy(custom_icon, basepath + "icon.png")
 		createdFiles.Add("icon")
 		multistate.Add(0)
