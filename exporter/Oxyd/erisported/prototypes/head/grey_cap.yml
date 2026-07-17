@@ -1,0 +1,34 @@
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_grey_cap
+  name: grey cap
+  description: It looks like a plain hat, but upon closer inspection, there's an advanced holographic array installed inside. It seems to have a small dial inside.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/grey_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/grey_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_grey_cap
+  name: grey cap
+  description: A baseball cap in a tasteful grey color. Reeks of welder fuel.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/grey_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/grey_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+

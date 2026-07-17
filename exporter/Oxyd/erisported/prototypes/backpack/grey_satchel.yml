@@ -1,0 +1,38 @@
+- type: entity
+  parent: ClothingBackpackSatchel
+  id: erisport_grey_satchel
+  name: grey satchel
+  description: A trendy looking satchel.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/grey_satchel.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/grey_satchel.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+  - type: Item
+    size: Huge
+
+- type: entity
+  parent: ClothingBackpack
+  id: erisport_grey_satchel
+  name: grey satchel
+  description: A satchel outfitted with cloaking tech. It seems to have a small dial inside, kept away from the storage.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/grey_satchel.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/grey_satchel.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+  - type: Item
+    size: Huge
+

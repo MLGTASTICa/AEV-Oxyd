@@ -1,0 +1,80 @@
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_surgical_cap
+  name: surgical cap
+  description: A cap surgeons wear during operations. Keeps their hair from tickling your internal organs.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_surgical_cap
+  name: surgical cap
+  description: A cap surgeons wear during operations. Keeps their hair from tickling your internal organs. This one is deep purple.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_surgical_cap
+  name: surgical cap
+  description: A cap surgeons wear during operations. Keeps their hair from tickling your internal organs. This one is baby blue.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+
+- type: entity
+  parent: ClothingHeadBase
+  id: erisport_surgical_cap
+  name: surgical cap
+  description: A cap surgeons wear during operations. Keeps their hair from tickling your internal organs. This one is dark green.
+  components:
+  - type: Sprite
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+  - type: Clothing
+    sprite: Oxyd/erisported/clothing/surgical_cap.rsi
+    quickEquip: true
+  - type: Tag
+    tags:
+    - ClothMade
+    - Recyclable
+	  - WhitelistChameleon
+  - type: HideLayerClothing
+    layers:
+      Hair: HEAD
+
