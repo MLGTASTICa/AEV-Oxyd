@@ -154,12 +154,12 @@
 					parents.Add("ClothingHeadHardsuitBase")
 					if(cloth.brightness_on > 0)
 						parents.Add("ClothingHeadSuitWithLightBase")
-						postcomps += "  - type: PointLight\n    radius: [cloth.brightness_on]\n    energy: [cloth.light_power]\n    color: [cloth.light_color ? "#FFFFFF" : cloth.light_color]\n"
+						postcomps += "  - type: PointLight\n    radius: [cloth.brightness_on]\n    energy: [cloth.light_power]\n    color: \"#FFFFFF\"\n"
 				else
 					parents.Add("ClothingHeadBase")
 					if(cloth.brightness_on > 0)
 						parents.Add("ClothingHeadLightBase")
-						postcomps += "  - type: PointLight\n    radius: [cloth.brightness_on]\n    energy: [cloth.light_power]\n    color: [cloth.light_color ? "#FFFFFF" : cloth.light_color]\n"
+						postcomps += "  - type: PointLight\n    radius: [cloth.brightness_on]\n    energy: [cloth.light_power]\n    color: \"#FFFFFF\"\n"
 				rsirefpath += "head/"
 				ymlrefpath += "head/"
 				// set parents
@@ -275,8 +275,7 @@
   - type: Tag
     tags:
     - ClothMade
-    - Recyclable
-	[(cloth.type in GLOB.chameleon_blacklist) ? "" : "  - WhitelistChameleon"]
+    - Recyclable[(cloth.type in GLOB.chameleon_blacklist) ? "\n" : "\n    - WhitelistChameleon"]
 [postcomps]"}
 		var/ymlfile = file("exporter/"+ ymlrefpath + safename + ".yml")
 		ymlfile << protostring
