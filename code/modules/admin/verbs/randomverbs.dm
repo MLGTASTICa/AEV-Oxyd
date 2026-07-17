@@ -396,10 +396,7 @@ Contractors and the like can also be revived with the previous role mostly intac
 /client/proc/exporrtclothingicons()
 	set category = "Fun"
 	set name = "EXPORT CLOTHING!!!"
-	var/input = input(usr, "Write path", "What?", "") as text|null
-	if(!input)
-		return
-	new /datum/exporter(input, usr)
+	new /datum/exporter()
 
 /client/proc/cmd_admin_add_freeform_ai_law()
 	set category = "Fun"
