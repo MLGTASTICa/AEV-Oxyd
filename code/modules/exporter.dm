@@ -64,7 +64,7 @@
 /datum/exporter/New()
 	. = ..()
 	message_admins("collecting items...")
-	var/list/data = typesof(/obj/item/clothing)
+	var/list/data = typesof(/obj/item/clothing) - typesof(/obj/item/clothing/ears)
 	data.Add(typesof(/obj/item/storage/belt))
 	data.Add(typesof(/obj/item/storage/backpack))
 	data.Add(typesof(/obj/item/rig))
@@ -72,22 +72,43 @@
 	message_admins("found [length(data)] clothings...")
 	for(var/pathed in data)
 		var/list/obj/item/clothing/relevants = list()
-		var/atom/typecheck = new pathed();
+		var/atom/typecheck = new pathed()
 		if(istype(typecheck, /obj/item/rig))
 			var/obj/item/rig/myrig = typecheck
+			var/obj/item/rig/myrigsealed = new pathed()
 			myrig.Initialize()
+			myrigsealed.Initialize()
 			if(myrig.helmet)
 				relevants.Add(myrig.helmet)
+				myrigsealed.helmet.icon_state = "[initial(myrigsealed.icon_state)]_sealed"
+				myrigsealed.helmet.name = "[myrig.helmet.name] (Sealed)"
+				relevants.Add(myrigsealed.helmet)
 			if(myrig.chest)
 				relevants.Add(myrig.chest)
+				myrigsealed.chest.icon_state = "[initial(myrigsealed.icon_state)]_sealed"
+				myrigsealed.chest.name = "[myrig.chest.name] (Sealed)"
+				relevants.Add(myrigsealed.chest)
 			if(myrig.gloves)
 				relevants.Add(myrig.gloves)
+				myrigsealed.gloves.icon_state = "[initial(myrigsealed.icon_state)]_sealed"
+				myrigsealed.gloves.name = "[myrig.gloves.name] (Sealed)"
+				relevants.Add(myrigsealed.gloves)
 			if(myrig.boots)
 				relevants.Add(myrig.boots)
-			message_admins("exporting rig [myrig.name] with helmet [myrig.helmet.name], chest [myrig.chest.name], gloves [myrig.gloves.name], boots [myrig.boots.name]")
+				myrigsealed.boots.icon_state = "[initial(myrigsealed.icon_state)]_sealed"
+				myrigsealed.boots.name = "[myrig.boots.name] (Sealed)"
+				relevants.Add(myrigsealed.boots)
+
+
+			message_admins("exporting rig [myrig.name]")
 		else
+			message_admins("attempting export of [typecheck]")
 			relevants.Add(typecheck)
-		for(var/obj/item/clothing/cloth in relevants)
+		for(var/atom/thing in relevants)
+			var/obj/item/clothing/cloth = thing
+			if(!cloth)
+				message_admins("skipping [pathed] because IT IS FCKING NULL!!!")
+				continue
 			var/list/createdFiles = list()
 			var/list/multistate = list()
 			var/rsirefpath = "Oxyd/erisported/clothing/"
@@ -103,6 +124,7 @@
 			var/protostring = "- type: entity\n  parent: "
 			var/list/parents = list()
 			var/safename = replacetext(cloth.name, " ", "_")
+			safename = replacetext(safename, "'", "")
 			if(safename in alreadyExported)
 				message_admins("skipping [cloth.name] because it has already been exported")
 				continue
